@@ -4,7 +4,7 @@ dist
 .DS_Store
 skinlog-dist.zip
 *.tsbuildinfo
-IDEAS.md
+BACKLOG.md
 
 # Private, machine-local AI config (never pushed). *.local above does not
 # match these because of the .json/.md suffixes.

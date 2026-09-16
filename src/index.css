@@ -361,4 +361,14 @@ button { font-family: inherit; cursor: pointer; }
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   .disclaimer { font-size: 11.5px; color: var(--muted); text-align: center; margin: 18px 6px 4px; line-height: 1.45; }
+
+  .pwa-banner {
+    position: fixed; left: 50%; transform: translateX(-50%);
+    bottom: calc(96px + env(safe-area-inset-bottom));
+    display: flex; align-items: center; gap: 12px;
+    background: var(--surface); color: var(--ink); border: 1px solid var(--border);
+    padding: 10px 12px 10px 16px; border-radius: 14px; font-size: 14px; font-weight: 600;
+    z-index: 60; box-shadow: var(--shadow); max-width: 92vw;
+  }
+  .pwa-banner .btn { min-height: 40px; padding: 0 14px; }
 }

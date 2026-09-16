@@ -226,6 +226,13 @@ export const es = {
     close: "Cerrar",
   },
 
+  pwa: {
+    updateAvailable: "Hay una versión nueva",
+    update: "Actualizar",
+    dismiss: "Ahora no",
+    offlineReady: "Lista para usar sin conexión",
+  },
+
   langSwitch: "Cambiar idioma",
 };
 

@@ -225,5 +225,12 @@ export const en: Dict = {
     close: "Close",
   },
 
+  pwa: {
+    updateAvailable: "A new version is available",
+    update: "Update",
+    dismiss: "Not now",
+    offlineReady: "Ready to use offline",
+  },
+
   langSwitch: "Switch language",
 };
