@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5">
+  <meta name="theme-color" content="#f5f7f6" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1518" media="(prefers-color-scheme: dark)">
+  <meta name="description" content="Seguimiento diario personal de rutina de skincare y progresión de retinol.">
+  <title>Rutina · Skincare</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAADf0lEQVR42u3dTW4iSxCF0crcAHMvkrGF5JEl5DGL9JwV4BVYUD9AZdxzVtBkx5eR9Qav27Qzh9PxNlHW9Xxpe/rzNMNOchTN0JMcQzP4JIfQDD7JITSDT3IIzeCTHEI3/Ixk6xlrBp/kbdANP8nboBt+kiPohp/kCLrhJzmCbvhJjqAbfpIj6Iaf5Ai64Sc5gm74SY6gOyaSdbc/yVugG36SI/AEwhPI7U/qFrABsAHc/qRuARsAG8DtT+oWsAGwAdz+pG4BGwAbAKID8Pwh9RlkA2ADgABAAJCl+QDGBgABgABAACAAEAAIAAQAAgABsKXfrx+HIIDs4ReBAEAAyU8fW0AAIIDkD19bQAAggMTb3xYQQPzwIwCEIgBDLQIBgACynzS2gABAAMkftLaAAEAAibe/LSCA+OFHAAhKAIYVAQjLIQgge0hFIAAQQPITxRYQgPc5AhAcAjCMCEB4CMAQIgABIoCw4ROBAAwdAhAkAjBsCECYCMCQIYC04RfoPO1wOt4cQ82h+vj+9JdnA+TeqLaBAOIHSAQCiB8cEQggfmBEIID4QRGBAOIHRAQCiB8MEQggfiBEIID4QRCBABCA298ZCMBfvAgEAAJw49kCAgABuOmcjQBAAG44ZyQAEAAIwGp3VgIAAYAAQAAgAB91zkwAIAAQAAgABAACAAGAAEAAIAAQAAjgifxric7MBgABgABAABAVgA9hZ2UDgAAgNADPIGdkA0ByALaAs7EBIDkAW8CZ2ACQHIAt4CziN4AInIEnEAJwA/rtAhCB3ywAEfitAhCB3ygAEfhtAhCB3yQAEfgtAhCB3yAAEfizV9MOp+PNMTxmlH850eDbALGDZfhtgMhtYPAFEBmCwRdAZAgGXwBxMRh6AcREYdgFAE/nP4OSHcD1fGmOgUTX86XZAHgCgQBAABAYgA9hEj+AbQBsAEeAADyDCHz+2ADYAP+VAdVvfxsAG+BeIVD19rcBsAEeLQWq3f42ADbA3GKgyu1/dwOIgMrD7wmEJ9DagmDU2//hDSACKg7/rCeQCKg2/LO/AURApeFf9BEsAqoM/6IARECV4V8cgAioMPyrAhABow//6gBEwMjDP03TtOnw+j9NM8rgb7YBbANGHf7NN4BtwCiD//QAhMAIr4qXPVmEwB6f0y9/swuBPX1HvvWjVQy8Y+h3E4AoDPu7/QEwV6LqaKGJiAAAAABJRU5ErkJggg==">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Rutina">
+  <script>
+  // Manifest incrustado en tiempo de ejecución: permite "Instalar app" / "Agregar a
+  // pantalla de inicio" desde el enlace HTTPS publicado, con ícono y modo pantalla
+  // completa. start_url se fija a la URL actual para funcionar sin archivos externos.
+  (function () {
+    try {
+      var manifest = {
+        name: "Rutina Skincare",
+        short_name: "Rutina",
+        start_url: location.href,
+        scope: "./",
+        display: "standalone",
+        orientation: "portrait",
+        background_color: "#f5f7f6",
+        theme_color: "#0f7a6e",
+        icons: [
+          { src: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAADf0lEQVR42u3dTW4iSxCF0crcAHMvkrGF5JEl5DGL9JwV4BVYUD9AZdxzVtBkx5eR9Qav27Qzh9PxNlHW9Xxpe/rzNMNOchTN0JMcQzP4JIfQDD7JITSDT3IIzeCTHEI3/Ixk6xlrBp/kbdANP8nboBt+kiPohp/kCLrhJzmCbvhJjqAbfpIj6Iaf5Ai64Sc5gm74SY6gOyaSdbc/yVugG36SI/AEwhPI7U/qFrABsAHc/qRuARsAG8DtT+oWsAGwAdz+pG4BGwAbAKID8Pwh9RlkA2ADgABAAJCl+QDGBgABgABAACAAEAAIAAQAAgABsKXfrx+HIIDs4ReBAEAAyU8fW0AAIIDkD19bQAAggMTb3xYQQPzwIwCEIgBDLQIBgACynzS2gABAAMkftLaAAEAAibe/LSCA+OFHAAhKAIYVAQjLIQgge0hFIAAQQPITxRYQgPc5AhAcAjCMCEB4CMAQIgABIoCw4ROBAAwdAhAkAjBsCECYCMCQIYC04RfoPO1wOt4cQ82h+vj+9JdnA+TeqLaBAOIHSAQCiB8cEQggfmBEIID4QRGBAOIHRAQCiB8MEQggfiBEIID4QRCBABCA298ZCMBfvAgEAAJw49kCAgABuOmcjQBAAG44ZyQAEAAIwGp3VgIAAYAAQAAgAB91zkwAIAAQAAgABAACAAGAAEAAIAAQAAjgifxric7MBgABgABAABAVgA9hZ2UDgAAgNADPIGdkA0ByALaAs7EBIDkAW8CZ2ACQHIAt4CziN4AInIEnEAJwA/rtAhCB3ywAEfitAhCB3ygAEfhtAhCB3yQAEfgtAhCB3yAAEfizV9MOp+PNMTxmlH850eDbALGDZfhtgMhtYPAFEBmCwRdAZAgGXwBxMRh6AcREYdgFAE/nP4OSHcD1fGmOgUTX86XZAHgCgQBAABAYgA9hEj+AbQBsAEeAADyDCHz+2ADYAP+VAdVvfxsAG+BeIVD19rcBsAEeLQWq3f42ADbA3GKgyu1/dwOIgMrD7wmEJ9DagmDU2//hDSACKg7/rCeQCKg2/LO/AURApeFf9BEsAqoM/6IARECV4V8cgAioMPyrAhABow//6gBEwMjDP03TtOnw+j9NM8rgb7YBbANGHf7NN4BtwCiD//QAhMAIr4qXPVmEwB6f0y9/swuBPX1HvvWjVQy8Y+h3E4AoDPu7/QEwV6LqaKGJiAAAAABJRU5ErkJggg==", sizes: "192x192", type: "image/png", purpose: "any maskable" },
+          { src: "data:image/png;base64,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", sizes: "512x512", type: "image/png", purpose: "any maskable" }
+        ]
+      };
+      var blob = new Blob([JSON.stringify(manifest)], { type: "application/manifest+json" });
+      var link = document.createElement("link");
+      link.rel = "manifest";
+      link.href = URL.createObjectURL(blob);
+      document.head.appendChild(link);
+    } catch (e) { /* sin soporte: la app sigue funcionando igual */ }
+  })();
+  </script>
+
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <span class="brand">
+        <span class="logo" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3s6 6.4 6 10.5a6 6 0 0 1-12 0C6 9.4 12 3 12 3z"/></svg>
+        </span>
+        Rutina <small>skincare</small>
+      </span>
+      <span class="spacer"></span>
+      <span class="phasechip" id="phasechip">Fase 1</span>
+    </header>
+
+    <main>
+      <section id="view-today"    class="view active" aria-label="Hoy"></section>
+      <section id="view-cal"      class="view" aria-label="Calendario"></section>
+      <section id="view-progress" class="view" aria-label="Progreso"></section>
+      <section id="view-phases"   class="view" aria-label="Fases"></section>
+      <section id="view-settings" class="view" aria-label="Ajustes"></section>
+    </main>
+  </div>
+
+  <nav class="nav" aria-label="Navegación principal">
+    <button data-view="today" class="on"><svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9.5h14V10"/></svg>Hoy</button>
+    <button data-view="cal"><svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><line x1="3.5" y1="9.5" x2="20.5" y2="9.5"/><line x1="8" y1="2.5" x2="8" y2="6.5"/><line x1="16" y1="2.5" x2="16" y2="6.5"/></svg>Calendario</button>
+    <button data-view="progress"><svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="20" x2="20" y2="20"/><rect x="5.5" y="12" width="3.2" height="7"/><rect x="10.4" y="8" width="3.2" height="11"/><rect x="15.3" y="4.5" width="3.2" height="14.5"/></svg>Progreso</button>
+    <button data-view="phases"><svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 3 21 8 12 13 3 8 12 3"/><polyline points="3 13 12 18 21 13"/></svg>Fases</button>
+    <button data-view="settings"><svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 12a7.4 7.4 0 0 0-.1-1.2l2-1.5-2-3.4-2.3 1a7.3 7.3 0 0 0-2-1.2l-.3-2.5H8.9l-.3 2.5a7.3 7.3 0 0 0-2 1.2l-2.3-1-2 3.4 2 1.5a7.4 7.4 0 0 0 0 2.4l-2 1.5 2 3.4 2.3-1a7.3 7.3 0 0 0 2 1.2l.3 2.5h4.2l.3-2.5a7.3 7.3 0 0 0 2-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z"/></svg>Ajustes</button>
+  </nav>
+
+  <div class="modal-back" id="modalBack" role="dialog" aria-modal="true" aria-label="Editar día">
+    <div class="modal" id="modal"></div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Orden importa: config -> util -> icons -> storage -> logic -> ui -> app.
+       Se cargan como scripts clásicos (no módulos) para que funcione también
+       abriendo index.html directamente con file:// en el teléfono. -->
+  <script src="js/config.js"></script>
+  <script src="js/util.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/logic.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
