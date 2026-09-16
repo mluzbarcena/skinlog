@@ -6,6 +6,7 @@ import { useState } from "react";
 import { NavBar, type ViewName } from "./components/NavBar";
 import { Topbar } from "./components/Topbar";
 import { ToastProvider } from "./components/Toast";
+import { UpdatePrompt } from "./components/UpdatePrompt";
 import { DayEditor } from "./components/DayEditor";
 import { useTheme } from "./state/useTheme";
 import { TodayView } from "./views/TodayView";
@@ -34,6 +35,7 @@ export default function App() {
       </div>
       <NavBar current={view} onChange={setView} />
       {editorDate && <DayEditor date={editorDate} onClose={() => setEditorDate(null)} />}
+      <UpdatePrompt />
     </ToastProvider>
   );
 }
