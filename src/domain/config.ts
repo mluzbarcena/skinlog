@@ -11,40 +11,42 @@ import type {
   Lang,
   NightType,
   NightTypeMeta,
+  Product,
   ProductId,
-  RoutineStep,
+  Routines,
   Settings,
   ToleranceMeta,
 } from "./types";
 
 export const STORAGE_KEY = "skincareTracker:v1";
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
+
+/** Optional AM step that is hidden unless `settings.brightingEnabled` is on. */
+export const BRIGHTENING_STEP_ID: ProductId = "sanaBright";
 
 // -----------------------------------------------------------------------------
-// 1) PRODUCTS  (stable id -> default visible name)
-// The id is never shown and must not change: it is what the logic keys off.
-// The visible name is editable from Settings (stored in settings.productNames).
+// 1) SEED PRODUCTS  (stable id + default visible name, in catalog order)
+// These are only the defaults for a fresh install / migration. The catalog is
+// editable from Settings and lives in settings.products from then on.
 // -----------------------------------------------------------------------------
-export const PRODUCTS: Record<ProductId, string> = {
-  cleanser: "CeraVe Gel Limpiador Espumoso",
-  hyaluEyes: "La Roche-Posay Hyalu B5 Eyes",
-  sanaWrinkle: "SANA Nameraka Honpo Wrinkle Care Eye Cream",
-  sanaBright: "SANA Nameraka Honpo Brightening Eye Cream",
-  retinolB3: "La Roche-Posay Retinol B3 Serum",
-  moisturizer: "AMPASTUDIO Crema Restauradora",
-  spf: "La Roche-Posay Anthelios UV Air SPF50+ Serum",
-};
+export const SEED_PRODUCTS: Product[] = [
+  { id: "cleanser", name: "CeraVe Gel Limpiador Espumoso", order: 0 },
+  { id: "hyaluEyes", name: "La Roche-Posay Hyalu B5 Eyes", order: 1 },
+  { id: "sanaWrinkle", name: "SANA Nameraka Honpo Wrinkle Care Eye Cream", order: 2 },
+  { id: "sanaBright", name: "SANA Nameraka Honpo Brightening Eye Cream", order: 3 },
+  { id: "retinolB3", name: "La Roche-Posay Retinol B3 Serum", order: 4 },
+  { id: "moisturizer", name: "AMPASTUDIO Crema Restauradora", order: 5 },
+  { id: "spf", name: "La Roche-Posay Anthelios UV Air SPF50+ Serum", order: 6 },
+];
 
 // -----------------------------------------------------------------------------
-// 2) ROUTINE TEMPLATES PER PHASE
+// 2) SEED ROUTINE TEMPLATES PER PHASE
 // Each step is { id } or { id, optional:true }.
 // "optional:true" => not marking it does NOT count as an incomplete routine.
-// 'sanaBright' additionally only appears in AM if enabled in Settings.
+// 'sanaBright' (BRIGHTENING_STEP_ID) additionally only appears in AM if enabled.
+// Seed only: the actual templates are editable and live in settings.routines.
 // -----------------------------------------------------------------------------
-export const ROUTINES: Record<
-  1 | 2,
-  { am: RoutineStep[]; pm: Partial<Record<NightType, RoutineStep[]>> }
-> = {
+export const SEED_ROUTINES: Routines = {
   1: {
     am: [{ id: "cleanser" }, { id: "hyaluEyes" }, { id: "moisturizer" }, { id: "spf" }],
     pm: {
@@ -137,6 +139,7 @@ export function defaultSettings(): Settings {
     brightingEnabled: true, // SANA Brightening optional in AM
     theme: "auto", // "auto" | "light" | "dark"
     language: detectLang(),
-    productNames: { ...PRODUCTS },
+    products: SEED_PRODUCTS.map((p) => ({ ...p })),
+    routines: structuredClone(SEED_ROUTINES),
   };
 }

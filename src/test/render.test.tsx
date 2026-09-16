@@ -6,6 +6,8 @@
 import { renderToString } from "react-dom/server";
 import { expect, test } from "vitest";
 import App from "../App";
+import { ToastProvider } from "../components/Toast";
+import { SettingsView } from "../views/SettingsView";
 
 test("app renders and shows the five nav sections", () => {
   const html = renderToString(<App />);
@@ -15,4 +17,17 @@ test("app renders and shows the five nav sections", () => {
   }
   // today view is the default and shows the log button
   expect(html.toLowerCase()).toContain("rutina");
+});
+
+test("settings view renders the product & routine editors with seeded data", () => {
+  const html = renderToString(
+    <ToastProvider>
+      <SettingsView />
+    </ToastProvider>,
+  );
+  // section headings + a seeded product name + the add-product control.
+  expect(html).toContain("Productos");
+  expect(html).toContain("Pasos de la rutina");
+  expect(html).toContain("CeraVe Gel Limpiador Espumoso");
+  expect(html).toContain("Añadir producto");
 });

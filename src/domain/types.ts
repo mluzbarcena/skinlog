@@ -8,25 +8,40 @@ export type Lang = "es" | "en";
 
 export type Phase = 1 | 2;
 
-/** Stable product ids. NEVER shown to the user; internal logic keys off these. */
-export type ProductId =
-  | "cleanser"
-  | "hyaluEyes"
-  | "sanaWrinkle"
-  | "sanaBright"
-  | "retinolB3"
-  | "moisturizer"
-  | "spf";
+/**
+ * Stable product id. Never translated; the logic and the per-day records key off
+ * it. Seeded products keep their legacy ids ("cleanser", ...); products created
+ * by the user get a generated id. It used to be a fixed union of literals; it is
+ * now a free string so products can be added/removed at runtime.
+ */
+export type ProductId = string;
 
 /** Night types selectable in the PM slot ("none" = did no routine). */
 export type NightType = "retinolB3" | "sana" | "recovery" | "none";
 
+/** Night types that own a routine (everything except "none"). */
+export type EditableNight = Exclude<NightType, "none">;
+
 /** Tolerance level: 0 (no irritation) .. 3 (severe). null = not recorded. */
 export type ToleranceLevel = 0 | 1 | 2 | 3;
+
+/** A user-editable product in the catalog. */
+export interface Product {
+  id: ProductId;
+  name: string;
+  /** Position in the catalog; lower comes first. */
+  order: number;
+}
 
 export interface RoutineStep {
   id: ProductId;
   optional?: boolean;
+}
+
+/** Editable routine templates per phase (AM list + one PM list per night type). */
+export interface Routines {
+  1: { am: RoutineStep[]; pm: Partial<Record<EditableNight, RoutineStep[]>> };
+  2: { am: RoutineStep[]; pm: Partial<Record<EditableNight, RoutineStep[]>> };
 }
 
 export interface NightTypeMeta {
@@ -54,7 +69,10 @@ export interface Settings {
   brightingEnabled: boolean;
   theme: "auto" | "light" | "dark";
   language: Lang;
-  productNames: Record<ProductId, string>;
+  /** Editable product catalog (replaces the old productNames map). */
+  products: Product[];
+  /** Editable routine steps per phase (replaces the hardcoded config.ROUTINES). */
+  routines: Routines;
 }
 
 export interface AmRecord {
