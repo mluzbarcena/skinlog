@@ -1,114 +1,113 @@
 # Skinlog — v1.0.0
 
-Herramienta personal para llevar el seguimiento diario de una rutina de skincare y la
-progresión de retinol. **Offline, sin backend, sin cuentas.** Todos los datos viven en el
-`localStorage` de tu navegador.
+Personal tool for daily tracking of a skincare routine and retinol progression.
+**Offline, no backend, no accounts.** All data lives in your browser's `localStorage`.
 
-Reescrita en **React + Vite + TypeScript** con **Tailwind CSS**, dark mode y bilingüe
-(**español / inglés**, con botón de mundo para cambiar). El resultado es un **sitio estático**.
+Rewritten in **React + Vite + TypeScript** with **Tailwind CSS**, dark mode and bilingual support
+(**Spanish / English**, with a globe button to switch). The result is a **static site**.
 
 ---
 
-## Requisitos
+## Requirements
 
-- Node.js 20+ (probado con Node 26) y npm.
+- Node.js 20+ (tested with Node 26) and npm.
 
-## Correr localmente
+## Running locally
 
 ```bash
 npm install
 npm run dev
 ```
 
-Vite imprime una URL (por defecto `http://localhost:5173`). Abrila en el navegador.
-Para probar desde el teléfono en la misma red Wi-Fi:
+Vite prints a URL (by default `http://localhost:5173`). Open it in your browser.
+To test from your phone on the same Wi-Fi network:
 
 ```bash
 npm run dev -- --host
 ```
 
-## Generar el build estático
+## Generating the static build
 
 ```bash
-npm run build      # type-check (tsc) + build de Vite -> genera dist/
-npm run preview    # sirve dist/ localmente para verificar (http://localhost:4173)
+npm run build      # type-check (tsc) + Vite build -> generates dist/
+npm run preview    # serves dist/ locally to verify (http://localhost:4173)
 ```
 
-El contenido de `dist/` es 100% estático: subilo tal cual a GitHub Pages, Netlify, Vercel,
-o cualquier hosting de archivos. Las rutas de assets son **relativas** (`base: "./"`), así
-que funciona también servido desde un subdirectorio.
+The contents of `dist/` are 100% static: upload them as-is to GitHub Pages, Netlify, Vercel,
+or any file host. Asset paths are **relative** (`base: "./"`), so it also works when served
+from a subdirectory.
 
-> Nota: por ser un build multi-archivo de Vite, necesita servirse por **HTTP** (no funciona
-> con doble clic sobre `dist/index.html` vía `file://`). Usá `npm run preview` o cualquier
-> servidor estático (`npx serve dist`).
+> Note: because this is a multi-file Vite build, it must be served over **HTTP** (it does not
+> work by double-clicking `dist/index.html` via `file://`). Use `npm run preview` or any
+> static server (`npx serve dist`).
 
-## ZIP listo para desplegar
+## Deploy-ready ZIP
 
-El build ya viene comprimido en **`skinlog-dist.zip`** (contenido de `dist/`). Para regenerarlo:
+The build also ships compressed in **`skinlog-dist.zip`** (contents of `dist/`). To regenerate it:
 
 ```bash
 npm run build
 cd dist && zip -r ../skinlog-dist.zip . && cd ..
 ```
 
-Descomprimí el ZIP en la raíz de tu hosting estático y listo.
+Unzip the ZIP into the root of your static host and you're done.
 
 ## Tests
 
 ```bash
-npm run test        # corre Vitest una vez
-npm run test:watch  # modo watch
+npm run test        # runs Vitest once
+npm run test:watch  # watch mode
 ```
 
-Cubre la lógica de negocio (fases, frecuencias, sugerencias, tolerancia, export/import) y un
-smoke test que renderiza la app entera sin errores.
+Covers the business logic (phases, frequencies, suggestions, tolerance, export/import) and a
+smoke test that renders the whole app without errors.
 
 ---
 
-## Estructura de archivos
+## File structure
 
 ```
 skinlog/
-├─ index.html                  # entry de Vite (meta PWA, manifest, script anti-flash del tema)
-├─ vite.config.ts              # plugins react + tailwind; base "./"; config de Vitest
+├─ index.html                  # Vite entry (PWA meta, manifest, theme anti-flash script)
+├─ vite.config.ts              # react + tailwind plugins; base "./"; Vitest config
 ├─ tsconfig*.json
-├─ public/                     # assets estáticos copiados tal cual al build
-│  ├─ manifest.webmanifest     # PWA (instalar en pantalla de inicio)
+├─ public/                     # static assets copied as-is into the build
+│  ├─ manifest.webmanifest     # PWA (install to home screen)
 │  └─ icon-192.png / icon-512.png / apple-touch-icon.png
 ├─ src/
-│  ├─ main.tsx                 # bootstrap de React
-│  ├─ App.tsx                  # shell: topbar + vista activa + nav + modal
-│  ├─ index.css                # Tailwind + sistema de diseño (tokens y componentes; dark mode por clase)
-│  ├─ domain/                  # LÓGICA PURA, sin React (portable y testeable)
-│  │  ├─ types.ts              # tipos del modelo de datos
-│  │  ├─ config.ts             # ⭐ TODAS LAS REGLAS EDITABLES (ver abajo)
-│  │  ├─ dates.ts              # helpers de fecha en hora LOCAL
-│  │  ├─ logic.ts              # fases, completitud, sugerencia de noche, stats
-│  │  └─ storage.ts            # estado + localStorage + export/import (external store)
+│  ├─ main.tsx                 # React bootstrap
+│  ├─ App.tsx                  # shell: topbar + active view + nav + modal
+│  ├─ index.css                # Tailwind + design system (tokens and components; class-based dark mode)
+│  ├─ domain/                  # PURE LOGIC, no React (portable and testable)
+│  │  ├─ types.ts              # data model types
+│  │  ├─ config.ts             # ⭐ ALL EDITABLE RULES (see below)
+│  │  ├─ dates.ts              # date helpers in LOCAL time
+│  │  ├─ logic.ts              # phases, completeness, night suggestion, stats
+│  │  └─ storage.ts            # state + localStorage + export/import (external store)
 │  ├─ state/
-│  │  ├─ useStore.ts           # bind del store a React (useSyncExternalStore) + acciones
-│  │  └─ useTheme.ts           # sincroniza la clase .dark según settings.theme
-│  ├─ i18n/                    # traducciones es/en (sin dependencias)
-│  │  ├─ es.ts / en.ts         # diccionarios (es define la forma del tipo Dict)
-│  │  ├─ format.ts             # formato de fechas localizado
+│  │  ├─ useStore.ts           # binds the store to React (useSyncExternalStore) + actions
+│  │  └─ useTheme.ts           # syncs the .dark class based on settings.theme
+│  ├─ i18n/                    # es/en translations (no dependencies)
+│  │  ├─ es.ts / en.ts         # dictionaries (es defines the shape of the Dict type)
+│  │  ├─ format.ts             # localized date formatting
 │  │  └─ useI18n.ts            # hook: { lang, t, fmt }
 │  ├─ components/              # Topbar, NavBar, LanguageSwitcher, Icon, Toast, DayEditor
 │  ├─ views/                   # TodayView, CalendarView, ProgressView, PhasesView, SettingsView
 │  └─ test/                    # logic.test.ts (Vitest) + render.test.tsx (smoke)
-└─ legacy/                     # versión vanilla original (referencia, no se usa en el build)
+└─ legacy/                     # original vanilla version (reference, not used in the build)
 ```
 
 ---
 
-## Cómo funciona la persistencia de datos
+## How data persistence works
 
-- Todo el estado se guarda en **una sola clave de `localStorage`: `skincareTracker:v1`**.
-- La forma persistida es:
+- All state is stored under **a single `localStorage` key: `skincareTracker:v1`**.
+- The persisted shape is:
 
   ```jsonc
   {
     "version": 1,
-    "settings": { /* frecuencias, fase, tema, idioma, nombres de productos… */ },
+    "settings": { /* frequencies, phase, theme, language, product names… */ },
     "days": {
       "2026-09-16": {
         "am": { "done": { "cleanser": true }, "skipped": false },
@@ -120,55 +119,55 @@ skinlog/
   }
   ```
 
-- Cada cambio (marcar un paso, elegir tipo de noche, editar ajustes) se **persiste al instante**.
-  React se entera vía `useSyncExternalStore`, así que la UI y el disco quedan siempre en sync.
-- Los **días vacíos se descartan** automáticamente al guardar (no ensucian el almacenamiento).
-- `migrate()` rellena claves nuevas si en el futuro cambia el esquema, sin perder datos viejos.
-- **No hay servidor ni sincronización entre dispositivos.** Si borrás los datos del navegador,
-  se pierden: desde **Ajustes → Datos** podés exportar a JSON (reimportable) o CSV (para planillas).
-- Las fechas se manejan siempre en **hora local** (`"YYYY-MM-DD"`) para que "hoy" no se corra
-  por zona horaria.
+- Every change (checking a step, choosing a night type, editing settings) is **persisted
+  instantly**. React learns about it via `useSyncExternalStore`, so the UI and disk stay in sync.
+- **Empty days are discarded** automatically on save (they don't clutter storage).
+- `migrate()` backfills new keys if the schema changes in the future, without losing old data.
+- **There is no server and no cross-device sync.** If you clear the browser's data, it is lost:
+  from **Settings → Data** you can export to JSON (re-importable) or CSV (for spreadsheets).
+- Dates are always handled in **local time** (`"YYYY-MM-DD"`) so that "today" doesn't shift
+  across time zones.
 
 ---
 
-## Dónde modificar las reglas de fases y frecuencias
+## Where to change phase and frequency rules
 
-Casi todo vive en **`src/domain/config.ts`**:
+Almost everything lives in **`src/domain/config.ts`**:
 
-| Querés cambiar…                                    | Editá…                  |
-|----------------------------------------------------|-------------------------|
-| Productos y sus nombres por defecto                | `PRODUCTS`              |
-| Los pasos de cada rutina por fase (AM/PM)          | `ROUTINES`              |
-| Qué tipos de noche existen en cada fase            | `NIGHT_TYPES_BY_PHASE`  |
-| Si un tipo de noche cuenta como retinol / su color | `NIGHT_TYPES`           |
-| Escala de tolerancia (emojis / niveles)            | `TOLERANCE`             |
-| Umbral de la advertencia por irritación            | `IRRITATION_WARNING`    |
-| Frecuencias objetivo por defecto                   | `DEFAULT_TARGETS`       |
-| Valores iniciales al abrir la app por primera vez  | `defaultSettings()`     |
+| You want to change…                                  | Edit…                   |
+|------------------------------------------------------|-------------------------|
+| Products and their default names                     | `PRODUCTS`              |
+| The steps of each routine per phase (AM/PM)          | `ROUTINES`              |
+| Which night types exist in each phase                | `NIGHT_TYPES_BY_PHASE`  |
+| Whether a night type counts as retinol / its color   | `NIGHT_TYPES`           |
+| Tolerance scale (emojis / levels)                    | `TOLERANCE`             |
+| The irritation warning threshold                     | `IRRITATION_WARNING`    |
+| Default target frequencies                           | `DEFAULT_TARGETS`       |
+| Initial values when the app is first opened          | `defaultSettings()`     |
 
-La **transición de FASE 1 a FASE 2** se define en **`src/domain/logic.ts`**, función
-`phaseForDate()`: es Fase 1 mientras `settings.hyaluFinishedDate` sea `null`, y Fase 2 para
-las fechas `>= hyaluFinishedDate`. Esa fecha se setea al tocar **"Terminé Hyalu B5"** en la
-vista Fases (o a mano en Ajustes).
+The **PHASE 1 to PHASE 2 transition** is defined in **`src/domain/logic.ts`**, function
+`phaseForDate()`: it is Phase 1 while `settings.hyaluFinishedDate` is `null`, and Phase 2 for
+dates `>= hyaluFinishedDate`. That date is set by tapping **"Finished Hyalu B5"** in the
+Phases view (or by hand in Settings).
 
-El algoritmo de **sugerencia de noche** (frecuencia semanal + espaciado, Retinol B3 y SANA en
-noches distintas) está en `suggestNight()` del mismo archivo. Nunca sube frecuencias solo:
-solo sugiere; vos siempre podés sobrescribir el tipo de noche de cualquier día.
+The **night suggestion** algorithm (weekly frequency + spacing, Retinol B3 and SANA on
+different nights) lives in `suggestNight()` in the same file. It never raises frequencies on its
+own: it only suggests; you can always override any day's night type.
 
-**Textos de la interfaz:** están en `src/i18n/es.ts` y `src/i18n/en.ts` (labels de tipos de
-noche, tolerancia, mensajes, etc.). `config.ts` solo guarda ids y estructura.
+**Interface text:** it lives in `src/i18n/es.ts` and `src/i18n/en.ts` (labels for night types,
+tolerance, messages, etc.). `config.ts` only stores ids and structure.
 
 ---
 
-## Idioma (i18n)
+## Language (i18n)
 
-- Español e inglés. El **botón de mundo** en la barra superior alterna entre ambos (también hay
-  un selector en **Ajustes → Apariencia**).
-- En la primera visita se **autodetecta** desde el idioma del navegador y luego queda guardado
-  en `settings.language` (persiste tras refresh).
+- Spanish and English. The **globe button** in the top bar toggles between them (there is also a
+  selector in **Settings → Appearance**).
+- On the first visit it is **auto-detected** from the browser language and then saved in
+  `settings.language` (persists after refresh).
 
 ## Dark mode
 
-Tres modos en **Ajustes → Apariencia**: **Auto** (sigue al sistema operativo), **Claro**, **Oscuro**.
-Se aplica con la clase `.dark` en `<html>`; un script inline en `index.html` la fija antes de que
-cargue React para evitar el "flash" de tema.
+Three modes in **Settings → Appearance**: **Auto** (follows the operating system), **Light**,
+**Dark**. It is applied via the `.dark` class on `<html>`; an inline script in `index.html` sets
+it before React loads to avoid the theme "flash".
