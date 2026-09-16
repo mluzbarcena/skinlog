@@ -1,46 +1,44 @@
 # Changelog
 
-Todos los cambios notables de este proyecto se documentan en este archivo.
+All notable changes to this project are documented in this file.
 
-El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/)
-y el proyecto sigue [Versionado Semántico](https://semver.org/lang/es/).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
+and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [1.0.0] - 2026-09-16
 
-Reescritura completa de la app vanilla (HTML/CSS/JS) a **React + Vite + TypeScript**.
-Ver especificación: [`specs/v1.0.0-react-migration.md`](specs/v1.0.0-react-migration.md).
+Complete rewrite of the vanilla app (HTML/CSS/JS) to **React + Vite + TypeScript**.
+See the specification: [`specs/v1.0.0-react-migration.md`](specs/v1.0.0-react-migration.md).
 
 ### Added
 
-- Stack **React 19 + Vite 6 + TypeScript** con build estático (`base: "./"`, portable).
-- **Tailwind CSS v4** como sistema de estilos, sobre los tokens de diseño existentes.
-- **i18n español/inglés** sin dependencias: diccionarios tipados, hook `useI18n()`, botón con
-  icono de mundo en la barra superior y selector en Ajustes. Idioma autodetectado del navegador
-  en la primera visita y persistido en `settings.language`.
-- **Dark mode** por clase `.dark` (auto/claro/oscuro) con script anti-flash en `index.html`.
-- **Tests con Vitest**: suite de lógica portada desde `_test.js` + smoke test de render de la
-  app completa.
-- Directorio `specs/` con la especificación de la migración y este `CHANGELOG.md`.
-- ZIP desplegable (`skinlog-dist.zip`) generado desde `dist/`.
+- **React 19 + Vite 6 + TypeScript** stack with a static build (`base: "./"`, portable).
+- **Tailwind CSS v4** as the styling system, on top of the existing design tokens.
+- **Spanish/English i18n** with no dependencies: typed dictionaries, `useI18n()` hook, a globe
+  icon button in the top bar and a selector in Settings. Language is auto-detected from the
+  browser on the first visit and persisted in `settings.language`.
+- **Dark mode** via the `.dark` class (auto/light/dark) with an anti-flash script in `index.html`.
+- **Tests with Vitest**: logic suite ported from `_test.js` + a smoke test rendering the whole app.
+- `specs/` directory with the migration specification and this `CHANGELOG.md`.
+- Deployable ZIP (`skinlog-dist.zip`) generated from `dist/`.
 
 ### Changed
 
-- Lógica de negocio (`config`, `dates`, `logic`, `storage`) portada a **funciones puras en TS**
-  que reciben el estado explícitamente, en lugar de leer un singleton global.
-- El store se expone como **external store** (`subscribe`/`getSnapshot`) enlazado a React con
+- Business logic (`config`, `dates`, `logic`, `storage`) ported to **pure TS functions** that
+  receive the state explicitly, instead of reading a global singleton.
+- The store is exposed as an **external store** (`subscribe`/`getSnapshot`) bound to React with
   `useSyncExternalStore`.
-- Textos visibles de la UI movidos desde `config.js` a los diccionarios de `src/i18n/`;
-  `config.ts` conserva solo ids y estructura.
-- La versión vanilla original se archivó en `legacy/` como referencia.
+- Visible UI text moved from `config.js` to the dictionaries in `src/i18n/`; `config.ts` keeps
+  only ids and structure.
+- The original vanilla version was archived in `legacy/` for reference.
 
 ### Preserved
 
-- **Modelo de datos y persistencia sin cambios**: misma clave `localStorage`
-  (`skincareTracker:v1`) y misma función `migrate()`, por lo que los datos existentes siguen
-  funcionando.
-- Todas las reglas de negocio: fases (transición vía `hyaluFinishedDate`), frecuencias objetivo,
-  sugerencia de noche (Retinol B3 y SANA en noches distintas), SANA Brightening opcional,
-  escala de tolerancia y advertencia por irritación.
-- Sin backend, sin cuentas, sin sincronización entre dispositivos.
+- **Data model and persistence unchanged**: same `localStorage` key (`skincareTracker:v1`) and
+  same `migrate()` function, so existing data keeps working.
+- All business rules: phases (transition via `hyaluFinishedDate`), target frequencies, night
+  suggestion (Retinol B3 and SANA on different nights), optional SANA Brightening, tolerance
+  scale and irritation warning.
+- No backend, no accounts, no cross-device sync.
 
 [1.0.0]: https://example.com/skinlog/releases/tag/v1.0.0
