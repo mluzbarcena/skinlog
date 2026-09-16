@@ -5,6 +5,23 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.3.0] - 2026-09-16
+
+### Changed
+
+- **Rebrand to SkinLog**: the app now uses the "Minimalista" teal droplet mark and the **SkinLog**
+  wordmark ("Log" in the accent colour), replacing the previous "Rutina · skincare" brand. The
+  Topbar renders a dedicated `BrandMark` component; the generic `droplet` icon is unchanged.
+- **New icons & metadata**: regenerated PWA (192/512 maskable), favicon (`favicon.svg`) and iOS
+  (`apple-touch-icon`) assets from the new mark, and updated the page title, `apple-mobile-web-app-title`
+  and the web app manifest (`name` / `short_name`) to "SkinLog".
+
+### Added
+
+- **Brand artwork sources** under `brand/` (`logo.svg`, `icon-source.svg`) as the source of truth,
+  plus `scripts/generate-icons.mjs` to rasterize the icon PNGs from the vector (uses `sharp`,
+  installed ad hoc — not a project dependency).
+
 ## [1.2.0] - 2026-09-16
 
 ### Added
@@ -76,6 +93,7 @@ See the specification: [`specs/v1.0.0-react-migration.md`](specs/v1.0.0-react-mi
   scale and irritation warning.
 - No backend, no accounts, no cross-device sync.
 
+[1.3.0]: https://github.com/mluzbarcena/skinlog/releases/tag/v1.3.0
 [1.2.0]: https://github.com/mluzbarcena/skinlog/releases/tag/v1.2.0
 [1.1.0]: https://github.com/mluzbarcena/skinlog/releases/tag/v1.1.0
 [1.0.0]: https://example.com/skinlog/releases/tag/v1.0.0
