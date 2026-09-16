@@ -1,4 +1,4 @@
-# Skinlog — v1.1.0
+# Skinlog — v1.2.0
 
 Personal tool for daily tracking of a skincare routine and retinol progression.
 **Offline, no backend, no accounts.** All data lives in your browser's `localStorage`.
@@ -107,8 +107,8 @@ skinlog/
 
   ```jsonc
   {
-    "version": 1,
-    "settings": { /* frequencies, phase, theme, language, product names… */ },
+    "version": 2,
+    "settings": { /* frequencies, phase, theme, language, products, routines… */ },
     "days": {
       "2026-09-16": {
         "am": { "done": { "cleanser": true }, "skipped": false },
@@ -123,7 +123,9 @@ skinlog/
 - Every change (checking a step, choosing a night type, editing settings) is **persisted
   instantly**. React learns about it via `useSyncExternalStore`, so the UI and disk stay in sync.
 - **Empty days are discarded** automatically on save (they don't clutter storage).
-- `migrate()` backfills new keys if the schema changes in the future, without losing old data.
+- `migrate()` backfills new keys when the schema changes, without losing old data. The `v1 → v2`
+  migration seeds the editable product catalog and routine templates from the old shape while
+  preserving every day's history (records key off stable product ids).
 - **There is no server and no cross-device sync.** If you clear the browser's data, it is lost:
   from **Settings → Data** you can export to JSON (re-importable) or CSV (for spreadsheets).
 - Dates are always handled in **local time** (`"YYYY-MM-DD"`) so that "today" doesn't shift
@@ -133,12 +135,15 @@ skinlog/
 
 ## Where to change phase and frequency rules
 
-Almost everything lives in **`src/domain/config.ts`**:
+Products and routine steps are **edited by the user at runtime** from **Settings → Products** and
+**Settings → Routine steps** (create, rename, reorder, delete; assign steps per phase and night
+type, mark them optional). They live in `settings.products` / `settings.routines`. Everything else
+— and the seed defaults for a fresh install — lives in **`src/domain/config.ts`**:
 
 | You want to change…                                  | Edit…                   |
 |------------------------------------------------------|-------------------------|
-| Products and their default names                     | `PRODUCTS`              |
-| The steps of each routine per phase (AM/PM)          | `ROUTINES`              |
+| Default products for a fresh install                 | `SEED_PRODUCTS`         |
+| Default routine steps per phase (AM/PM)              | `SEED_ROUTINES`         |
 | Which night types exist in each phase                | `NIGHT_TYPES_BY_PHASE`  |
 | Whether a night type counts as retinol / its color   | `NIGHT_TYPES`           |
 | Tolerance scale (emojis / levels)                    | `TOLERANCE`             |

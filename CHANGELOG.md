@@ -5,6 +5,26 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.2.0] - 2026-09-16
+
+### Added
+
+- **Editable products & routine steps**: the product catalog and the per-phase routine templates
+  are now edited from **Settings** (create, rename, reorder, delete products; assign steps per
+  phase and night type, mark them optional). They were previously compile-time constants.
+- **App version in Settings**: a discreet `v<x.y.z>` label at the bottom of Settings, injected at
+  build time from `package.json` (`__APP_VERSION__`), to confirm which build is live after a deploy.
+
+### Changed
+
+- **Schema `v1 → v2`**: products and routines moved into `settings.products` / `settings.routines`.
+  `migrate()` seeds them from the previous shape and **preserves all day history** (records key off
+  stable product ids). `ProductId` is now a free string; `config.ts` exposes `SEED_PRODUCTS` /
+  `SEED_ROUTINES` as defaults only.
+- Routine logic (`amSteps` / `pmSteps`) reads templates from settings and ignores steps that
+  reference a deleted product. The set of night types stays fixed (suggestions and weekly targets
+  depend on their semantics); only their steps are editable.
+
 ## [1.1.0] - 2026-09-16
 
 ### Added
@@ -56,5 +76,6 @@ See the specification: [`specs/v1.0.0-react-migration.md`](specs/v1.0.0-react-mi
   scale and irritation warning.
 - No backend, no accounts, no cross-device sync.
 
+[1.2.0]: https://github.com/mluzbarcena/skinlog/releases/tag/v1.2.0
 [1.1.0]: https://github.com/mluzbarcena/skinlog/releases/tag/v1.1.0
 [1.0.0]: https://example.com/skinlog/releases/tag/v1.0.0
