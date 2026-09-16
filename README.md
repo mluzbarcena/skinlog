@@ -1,4 +1,4 @@
-# Skinlog — v1.0.0
+# Skinlog — v1.1.0
 
 Personal tool for daily tracking of a skincare routine and retinol progression.
 **Offline, no backend, no accounts.** All data lives in your browser's `localStorage`.
@@ -92,7 +92,7 @@ skinlog/
 │  │  ├─ es.ts / en.ts         # dictionaries (es defines the shape of the Dict type)
 │  │  ├─ format.ts             # localized date formatting
 │  │  └─ useI18n.ts            # hook: { lang, t, fmt }
-│  ├─ components/              # Topbar, NavBar, LanguageSwitcher, Icon, Toast, DayEditor
+│  ├─ components/              # Topbar, NavBar, LanguageSwitcher, Icon, Toast, DayEditor, UpdatePrompt
 │  ├─ views/                   # TodayView, CalendarView, ProgressView, PhasesView, SettingsView
 │  └─ test/                    # logic.test.ts (Vitest) + render.test.tsx (smoke)
 └─ legacy/                     # original vanilla version (reference, not used in the build)
@@ -172,3 +172,13 @@ tolerance, messages, etc.). `config.ts` only stores ids and structure.
 Three modes in **Settings → Appearance**: **Auto** (follows the operating system), **Light**,
 **Dark**. It is applied via the `.dark` class on `<html>`; an inline script in `index.html` sets
 it before React loads to avoid the theme "flash".
+
+---
+
+## Offline & install (PWA)
+
+The app is an **installable PWA**. A service worker (via `vite-plugin-pwa` / Workbox) precaches
+the app shell, icons and the self-hosted font, so after the first load it **boots and runs with
+zero network calls** — even fully offline. The web app manifest and `sw.js` are generated at build
+time (no static `manifest.webmanifest` to maintain). When a new version is deployed, an in-app
+banner offers to update on demand (`registerType: "prompt"`).
