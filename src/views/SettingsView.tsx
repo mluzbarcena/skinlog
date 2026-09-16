@@ -215,7 +215,7 @@ export function SettingsView() {
             />
           </div>
         ))}
-        <button className="btn primary block" style={{ marginTop: 12 }} onClick={saveNames}>
+        <button className="btn primary btn-block" style={{ marginTop: 12 }} onClick={saveNames}>
           {t.settings.saveNames}
         </button>
       </div>
@@ -244,7 +244,7 @@ export function SettingsView() {
         </div>
         <div className="field">
           <label>{t.settings.importJson}</label>
-          <button className="btn ghost block" onClick={() => fileRef.current?.click()}>
+          <button className="btn ghost btn-block" onClick={() => fileRef.current?.click()}>
             <Icon name="upload" size={18} /> {t.settings.chooseJson}
           </button>
           <input
@@ -258,7 +258,7 @@ export function SettingsView() {
         </div>
         <div className="field">
           <label>{t.settings.dangerZone}</label>
-          <button className="btn danger block" onClick={clearData}>
+          <button className="btn danger btn-block" onClick={clearData}>
             <Icon name="trash" size={18} /> {t.settings.deleteAll}
           </button>
         </div>
