@@ -24,7 +24,7 @@ export const es = {
   weekdaysShort: WEEKDAYS_SHORT,
   months: MONTHS,
 
-  brand: { name: "Rutina", tag: "skincare" },
+  brand: { name: "SkinLog" },
 
   nav: {
     today: "Hoy",

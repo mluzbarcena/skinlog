@@ -25,13 +25,13 @@ export default defineConfig({
     // source of truth) — the plugin injects <link rel="manifest"> at build time.
     VitePWA({
       registerType: "prompt",
-      includeAssets: ["apple-touch-icon.png", "icon-192.png", "icon-512.png"],
+      includeAssets: ["favicon.svg", "apple-touch-icon.png", "icon-192.png", "icon-512.png"],
       workbox: {
-        globPatterns: ["**/*.{js,css,html,png,woff2}"],
+        globPatterns: ["**/*.{js,css,html,png,svg,woff2}"],
       },
       manifest: {
-        name: "Rutina Skincare",
-        short_name: "Rutina",
+        name: "SkinLog",
+        short_name: "SkinLog",
         start_url: "./",
         scope: "./",
         display: "standalone",

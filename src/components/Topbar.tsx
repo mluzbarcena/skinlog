@@ -5,7 +5,7 @@
 import { currentPhase } from "../domain/logic";
 import { useStore } from "../state/useStore";
 import { useI18n } from "../i18n/useI18n";
-import { Icon } from "./Icon";
+import { BrandMark } from "./BrandMark";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 
 export function Topbar() {
@@ -17,9 +17,11 @@ export function Topbar() {
     <header className="topbar">
       <span className="brand">
         <span className="logo" aria-hidden="true">
-          <Icon name="droplet" size={22} />
+          <BrandMark size={24} />
         </span>
-        {t.brand.name} <small>{t.brand.tag}</small>
+        <span className="wordmark" aria-label={t.brand.name}>
+          Skin<span className="accent">Log</span>
+        </span>
       </span>
       <span className="spacer" />
       <LanguageSwitcher />
