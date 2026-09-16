@@ -2,11 +2,19 @@ import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
+import pkg from "./package.json";
+
+// Single source of truth for the app version: read it from package.json and
+// expose it to the client as the compile-time constant __APP_VERSION__ (see
+// src/vite-env.d.ts). Lets the UI show which build is live after a deploy.
 
 // base: "./" keeps built asset paths relative, so dist/ can be served from any
 // subfolder (GitHub Pages, Netlify, a plain static host) without extra config.
 export default defineConfig({
   base: "./",
+  define: {
+    __APP_VERSION__: JSON.stringify(pkg.version),
+  },
   plugins: [
     react(),
     tailwindcss(),

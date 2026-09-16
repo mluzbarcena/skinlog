@@ -264,6 +264,7 @@ export function SettingsView() {
         </div>
       </div>
       <p className="disclaimer">{t.settings.dataDisclaimer}</p>
+      <p className="app-version">v{__APP_VERSION__}</p>
     </section>
   );
 }
