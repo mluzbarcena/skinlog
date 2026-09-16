@@ -163,7 +163,7 @@ button { font-family: inherit; cursor: pointer; }
     font-weight: 600; font-size: 15px;
   }
   .btn:active { transform: translateY(1px); }
-  .btn.block { width: 100%; }
+  .btn.btn-block { width: 100%; }
   .btn.primary { background: var(--accent); color: var(--accent-on); border-color: transparent; }
   .btn.big { min-height: 52px; font-size: 16px; margin-top: 14px; }
   .btn.ghost { background: transparent; border-color: var(--border); }

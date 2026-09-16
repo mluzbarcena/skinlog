@@ -51,7 +51,7 @@ export function PhasesView() {
           <span>{t.phases.perWeek(s.retinolB3PerWeek)}</span>
         </div>
         {phase === 1 ? (
-          <button className="btn block" style={{ marginTop: 12 }} onClick={finishHyalu}>
+          <button className="btn btn-block" style={{ marginTop: 12 }} onClick={finishHyalu}>
             <Icon name="check" size={18} /> {t.phases.finishHyaluBtn}
           </button>
         ) : (
@@ -84,7 +84,7 @@ export function PhasesView() {
               <p className="hint" style={{ margin: "10px 0 4px" }}>
                 {t.phases.adaptHint}
               </p>
-              <button className="btn block" style={{ marginTop: 8 }} onClick={confirmSana}>
+              <button className="btn btn-block" style={{ marginTop: 8 }} onClick={confirmSana}>
                 <Icon name="check" size={18} /> {t.phases.confirmSanaBtn}
               </button>
             </>

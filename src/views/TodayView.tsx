@@ -94,7 +94,7 @@ export function TodayView({ openEditor }: { openEditor: (date: string) => void }
         </div>
       )}
 
-      <button className="btn primary big block" onClick={() => openEditor(date)}>
+      <button className="btn primary big btn-block" onClick={() => openEditor(date)}>
         <Icon name="edit" size={18} /> {st.registered ? t.today.editRoutine : t.today.logRoutine}
       </button>
     </section>
