@@ -1,4 +1,4 @@
-# Skinlog — v1.2.0
+# Skinlog — v1.3.0
 
 Personal tool for daily tracking of a skincare routine and retinol progression.
 **Offline, no backend, no accounts.** All data lives in your browser's `localStorage`.
@@ -92,7 +92,7 @@ skinlog/
 │  │  ├─ es.ts / en.ts         # dictionaries (es defines the shape of the Dict type)
 │  │  ├─ format.ts             # localized date formatting
 │  │  └─ useI18n.ts            # hook: { lang, t, fmt }
-│  ├─ components/              # Topbar, NavBar, LanguageSwitcher, Icon, Toast, DayEditor, UpdatePrompt
+│  ├─ components/              # Topbar, BrandMark, NavBar, LanguageSwitcher, Icon, Toast, DayEditor, UpdatePrompt
 │  ├─ views/                   # TodayView, CalendarView, ProgressView, PhasesView, SettingsView
 │  └─ test/                    # logic.test.ts (Vitest) + render.test.tsx (smoke)
 └─ legacy/                     # original vanilla version (reference, not used in the build)
