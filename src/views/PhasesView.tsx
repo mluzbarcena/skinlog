@@ -3,7 +3,7 @@
    ============================================================================= */
 
 import { todayStr } from "../domain/dates";
-import { currentPhase } from "../domain/logic";
+import { currentPhase, productName } from "../domain/logic";
 import { DEFAULT_TARGETS } from "../domain/config";
 import { updateSettings, useStore } from "../state/useStore";
 import { useI18n } from "../i18n/useI18n";
@@ -43,11 +43,11 @@ export function PhasesView() {
           </span>
         </div>
         <div className="ph-row">
-          <span className="lbl">{s.productNames.hyaluEyes}</span>
+          <span className="lbl">{productName(state, "hyaluEyes")}</span>
           <span>{phase === 1 ? t.phases.inUse : t.phases.done}</span>
         </div>
         <div className="ph-row">
-          <span className="lbl">Retinol B3</span>
+          <span className="lbl">{t.night.short("retinolB3")}</span>
           <span>{t.phases.perWeek(s.retinolB3PerWeek)}</span>
         </div>
         {phase === 1 ? (
@@ -71,7 +71,7 @@ export function PhasesView() {
           </span>
         </div>
         <div className="ph-row">
-          <span className="lbl">Retinol B3</span>
+          <span className="lbl">{t.night.short("retinolB3")}</span>
           <span>{t.phases.perWeek(s.retinolB3PerWeek)}</span>
         </div>
         <div className="ph-row">

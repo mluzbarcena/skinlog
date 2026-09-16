@@ -5,8 +5,8 @@
 
    Persisted shape (single key "skincareTracker:v1"):
      {
-       version: 1,
-       settings: { ...see config.defaultSettings() },
+       version: 2,
+       settings: { ...see config.defaultSettings(); includes products[] + routines },
        days: {
          "YYYY-MM-DD": {
            am:  { done: { productId: true, ... }, skipped: false },
@@ -18,29 +18,46 @@
      }
    ============================================================================= */
 
-import { PRODUCTS, SCHEMA_VERSION, STORAGE_KEY, defaultSettings } from "./config";
+import { SCHEMA_VERSION, SEED_PRODUCTS, SEED_ROUTINES, STORAGE_KEY, defaultSettings } from "./config";
 import { dayStatus } from "./logic";
-import type { AppState, DayRecord, Settings } from "./types";
+import type { AppState, DayRecord, Product, Settings } from "./types";
 
 function emptyState(): AppState {
   return { version: SCHEMA_VERSION, settings: defaultSettings(), days: {} };
 }
 
-// Fills in keys that may be missing after a schema update.
+// Fills in keys that may be missing after a schema update. Idempotent: running
+// it twice yields the same result (it never re-seeds an already-migrated state).
 function migrate(s: unknown): AppState {
   if (!s || typeof s !== "object") return emptyState();
   const obj = s as Partial<AppState>;
   if (!obj.settings) {
     obj.settings = defaultSettings();
   } else {
-    const def = defaultSettings();
     const settings = obj.settings as Settings;
     const settingsRec = settings as unknown as Record<string, unknown>;
-    const defRec = def as unknown as Record<string, unknown>;
+
+    // --- v1 -> v2: build products[] and routines from the legacy shape. ---
+    // Per-day records key off product ids, so seeded ids are preserved and the
+    // history keeps resolving. Do this BEFORE the generic default-fill below so
+    // legacy productNames are honored instead of being overwritten by seeds.
+    if (!Array.isArray(settings.products)) {
+      const legacy = (settingsRec.productNames as Record<string, string>) || {};
+      const seeded: Product[] = SEED_PRODUCTS.map((p) => ({ ...p, name: legacy[p.id] ?? p.name }));
+      const seededIds = new Set(SEED_PRODUCTS.map((p) => p.id));
+      const extras: Product[] = Object.keys(legacy)
+        .filter((id) => !seededIds.has(id))
+        .map((id, i) => ({ id, name: legacy[id], order: seeded.length + i }));
+      settings.products = [...seeded, ...extras];
+    }
+    if (!settings.routines) settings.routines = structuredClone(SEED_ROUTINES);
+    delete settingsRec.productNames;
+
+    // --- fill any remaining scalar keys missing after a schema update. ---
+    const defRec = defaultSettings() as unknown as Record<string, unknown>;
     for (const k in defRec) {
       if (!(k in settingsRec)) settingsRec[k] = defRec[k];
     }
-    settings.productNames = { ...PRODUCTS, ...(settings.productNames || {}) };
   }
   if (!obj.days || typeof obj.days !== "object") obj.days = {};
   obj.version = SCHEMA_VERSION;

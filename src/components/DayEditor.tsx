@@ -6,7 +6,15 @@
 
 import { useEffect, useState } from "react";
 import { parse, todayStr } from "../domain/dates";
-import { amSteps, nightTypesFor, phaseForDate, pmSteps, recentIrritation, suggestNight } from "../domain/logic";
+import {
+  amSteps,
+  nightTypesFor,
+  phaseForDate,
+  pmSteps,
+  productName,
+  recentIrritation,
+  suggestNight,
+} from "../domain/logic";
 import { NIGHT_TYPES, TOLERANCE } from "../domain/config";
 import { emptyDay, getDay, saveDay, useStore } from "../state/useStore";
 import { useI18n } from "../i18n/useI18n";
@@ -18,7 +26,6 @@ export function DayEditor({ date, onClose }: { date: string; onClose: () => void
   const state = useStore();
   const { t, fmt } = useI18n();
   const toast = useToast();
-  const s = state.settings;
 
   const [day, setDay] = useState<DayRecord>(() => structuredClone(getDay(date) ?? emptyDay()));
 
@@ -46,7 +53,6 @@ export function DayEditor({ date, onClose }: { date: string; onClose: () => void
   const phase = phaseForDate(state, date);
   const isToday = date === todayStr();
   const sug = suggestNight(state, date);
-  const names = s.productNames;
 
   const amList = amSteps(state, date);
   const types = nightTypesFor(state, date);
@@ -123,7 +129,7 @@ export function DayEditor({ date, onClose }: { date: string; onClose: () => void
               <button key={step.id} className={"chk" + (on ? " on" : "")} onClick={() => toggleAm(step.id)}>
                 <span className="box">{on && <Icon name="check" size={17} />}</span>
                 <span className="name">
-                  {names[step.id]}
+                  {productName(state, step.id)}
                   {step.optional && <span className="opt">{t.editor.optional}</span>}
                 </span>
               </button>
@@ -190,7 +196,7 @@ export function DayEditor({ date, onClose }: { date: string; onClose: () => void
                   return (
                     <button key={step.id} className={"chk" + (on ? " on" : "")} onClick={() => togglePm(step.id)}>
                       <span className="box">{on && <Icon name="check" size={17} />}</span>
-                      <span className="name">{names[step.id]}</span>
+                      <span className="name">{productName(state, step.id)}</span>
                     </button>
                   );
                 })}

@@ -5,10 +5,10 @@
    ============================================================================= */
 
 import {
+  BRIGHTENING_STEP_ID,
   DEFAULT_TARGETS,
   IRRITATION_WARNING,
   NIGHT_TYPES_BY_PHASE,
-  ROUTINES,
 } from "./config";
 import { addDays, diffDays, isFuture, lastNDays, pct, todayStr } from "./dates";
 import type {
@@ -21,12 +21,24 @@ import type {
   NightType,
   Phase,
   PmStatus,
+  ProductId,
   RoutineStep,
   Stats,
 } from "./types";
 
 function getDay(state: AppState, dateStr: string): DayRecord | null {
   return state.days[dateStr] || null;
+}
+
+/** Set of product ids that currently exist in the catalog. */
+function knownProductIds(state: AppState): Set<ProductId> {
+  return new Set(state.settings.products.map((p) => p.id));
+}
+
+/** Visible name of a product id; falls back to the id if it was deleted. */
+export function productName(state: AppState, id: ProductId): string {
+  const p = state.settings.products.find((x) => x.id === id);
+  return p ? p.name : id;
 }
 
 // --- PHASE -------------------------------------------------------------------
@@ -43,18 +55,25 @@ export function currentPhase(state: AppState): Phase {
 }
 
 // --- TEMPLATES ---------------------------------------------------------------
-// AM depends on the phase; filters sanaBright out when disabled.
+// Read from the editable templates in settings. Steps referencing a product that
+// no longer exists are filtered out (defensive against deletions).
+// AM also hides the brightening step when disabled.
 export function amSteps(state: AppState, dateStr: string): RoutineStep[] {
   const phase = phaseForDate(state, dateStr);
   const brighting = state.settings.brightingEnabled;
-  return ROUTINES[phase].am.filter((s) => s.id !== "sanaBright" || brighting);
+  const known = knownProductIds(state);
+  return state.settings.routines[phase].am.filter(
+    (s) => (s.id !== BRIGHTENING_STEP_ID || brighting) && known.has(s.id),
+  );
 }
 
 export function pmSteps(state: AppState, dateStr: string, type: NightType | null): RoutineStep[] {
   if (!type || type === "none") return [];
   const phase = phaseForDate(state, dateStr);
-  const table = ROUTINES[phase].pm;
-  return table[type] ? table[type]!.slice() : [];
+  const steps = state.settings.routines[phase].pm[type];
+  if (!steps) return [];
+  const known = knownProductIds(state);
+  return steps.filter((s) => known.has(s.id));
 }
 
 export function nightTypesFor(state: AppState, dateStr: string): NightType[] {

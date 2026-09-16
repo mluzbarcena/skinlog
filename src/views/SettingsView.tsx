@@ -1,11 +1,13 @@
 /* =============================================================================
-   SettingsView — routine/phase targets, appearance, language, product names,
-   and data export/import/clear. All changes persist immediately.
+   SettingsView — routine/phase targets, appearance, language, the editable
+   product catalog, the editable routine steps, and data export/import/clear.
+   All changes persist immediately.
    ============================================================================= */
 
 import { useEffect, useRef, useState } from "react";
 import { todayStr } from "../domain/dates";
 import { maxSanaPerWeek, recentIrritation } from "../domain/logic";
+import { NIGHT_TYPES_BY_PHASE } from "../domain/config";
 import {
   clearAll,
   exportCSV,
@@ -15,9 +17,10 @@ import {
   useStore,
 } from "../state/useStore";
 import { useI18n } from "../i18n/useI18n";
+import type { Dict } from "../i18n/es";
 import { useToast } from "../components/Toast";
 import { Icon } from "../components/Icon";
-import type { Lang, ProductId } from "../domain/types";
+import type { EditableNight, Lang, Phase, Product, RoutineStep } from "../domain/types";
 
 function download(filename: string, text: string, mime: string) {
   const blob = new Blob([text], { type: mime + ";charset=utf-8" });
@@ -33,6 +36,90 @@ function download(filename: string, text: string, mime: string) {
   }, 100);
 }
 
+/** Editable ordered list of routine steps for one slot (AM or a night type). */
+function StepList({
+  list,
+  products,
+  t,
+  onChange,
+}: {
+  list: RoutineStep[];
+  products: Product[];
+  t: Dict;
+  onChange: (next: RoutineStep[]) => void;
+}) {
+  function move(i: number, dir: -1 | 1) {
+    const j = i + dir;
+    if (j < 0 || j >= list.length) return;
+    const next = [...list];
+    [next[i], next[j]] = [next[j], next[i]];
+    onChange(next);
+  }
+
+  return (
+    <>
+      {list.length === 0 && (
+        <p className="hint" style={{ fontSize: 13 }}>
+          {t.settings.emptyRoutine}
+        </p>
+      )}
+      {list.map((step, i) => (
+        <div className="field" key={i} style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <select
+            style={{ flex: 1 }}
+            value={step.id}
+            onChange={(e) => onChange(list.map((s, k) => (k === i ? { ...s, id: e.target.value } : s)))}
+          >
+            {products.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name || p.id}
+              </option>
+            ))}
+          </select>
+          <label
+            className="switch"
+            title={t.settings.optionalStep}
+            style={{ display: "inline-flex", alignItems: "center" }}
+          >
+            <input
+              type="checkbox"
+              checked={!!step.optional}
+              onChange={(e) => onChange(list.map((s, k) => (k === i ? { ...s, optional: e.target.checked } : s)))}
+            />
+            <span className="track" />
+            <span className="thumb" />
+          </label>
+          <button className="iconbtn" aria-label={t.settings.moveUp} disabled={i === 0} onClick={() => move(i, -1)}>
+            <Icon name="chevronUp" size={18} />
+          </button>
+          <button
+            className="iconbtn"
+            aria-label={t.settings.moveDown}
+            disabled={i === list.length - 1}
+            onClick={() => move(i, 1)}
+          >
+            <Icon name="chevronDown" size={18} />
+          </button>
+          <button
+            className="iconbtn"
+            aria-label={t.settings.removeStep}
+            onClick={() => onChange(list.filter((_, k) => k !== i))}
+          >
+            <Icon name="close" size={18} />
+          </button>
+        </div>
+      ))}
+      <button
+        className="btn ghost btn-block"
+        style={{ marginBottom: 12 }}
+        onClick={() => onChange([...list, { id: products[0].id }])}
+      >
+        <Icon name="plus" size={16} /> {t.settings.addStep}
+      </button>
+    </>
+  );
+}
+
 export function SettingsView() {
   const state = useStore();
   const { t, lang } = useI18n();
@@ -42,12 +129,17 @@ export function SettingsView() {
 
   const [ret, setRet] = useState(String(s.retinolB3PerWeek));
   const [sana, setSana] = useState(String(s.sanaPerWeek));
-  const [names, setNames] = useState<Record<ProductId, string>>({ ...s.productNames });
+  const [routinePhase, setRoutinePhase] = useState<Phase>(1);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => setRet(String(s.retinolB3PerWeek)), [s.retinolB3PerWeek]);
   useEffect(() => setSana(String(s.sanaPerWeek)), [s.sanaPerWeek]);
-  useEffect(() => setNames({ ...s.productNames }), [s.productNames]);
+
+  // Catalog always rendered/edited in explicit order.
+  const products = [...s.products].sort((a, b) => a.order - b.order);
+  const editableNights = NIGHT_TYPES_BY_PHASE[routinePhase].filter(
+    (n): n is EditableNight => n !== "none",
+  );
 
   function commitRet() {
     let v = parseInt(ret, 10);
@@ -77,14 +169,52 @@ export function SettingsView() {
     toast(t.settings.saved);
   }
 
-  function saveNames() {
-    const next = { ...s.productNames };
-    (Object.keys(names) as ProductId[]).forEach((id) => {
-      const v = names[id].trim();
-      if (v) next[id] = v;
+  // --- product catalog editing (order renumbered contiguously on commit) ---
+  function commitProducts(next: Product[]) {
+    updateSettings({ products: next.map((p, i) => ({ ...p, order: i })) });
+  }
+  function addProduct() {
+    commitProducts([...products, { id: crypto.randomUUID(), name: "", order: products.length }]);
+  }
+  function renameProduct(id: string, name: string) {
+    commitProducts(products.map((p) => (p.id === id ? { ...p, name } : p)));
+  }
+  function moveProduct(i: number, dir: -1 | 1) {
+    const j = i + dir;
+    if (j < 0 || j >= products.length) return;
+    const next = [...products];
+    [next[i], next[j]] = [next[j], next[i]];
+    commitProducts(next);
+  }
+  function deleteProduct(id: string) {
+    const p = products.find((x) => x.id === id);
+    if (!p) return;
+    if (!confirm(t.settings.deleteProductConfirm(p.name || p.id))) return;
+    // Drop the product and any routine step that referenced it.
+    const routines = structuredClone(s.routines);
+    for (const ph of [1, 2] as const) {
+      routines[ph].am = routines[ph].am.filter((st) => st.id !== id);
+      for (const nt of Object.keys(routines[ph].pm) as EditableNight[]) {
+        routines[ph].pm[nt] = routines[ph].pm[nt]!.filter((st) => st.id !== id);
+      }
+    }
+    updateSettings({
+      products: products.filter((x) => x.id !== id).map((x, i) => ({ ...x, order: i })),
+      routines,
     });
-    updateSettings({ productNames: next });
-    toast(t.settings.namesSaved);
+    toast(t.settings.saved);
+  }
+
+  // --- routine editing ---
+  function setRoutineList(
+    phase: Phase,
+    slot: { kind: "am" } | { kind: "pm"; night: EditableNight },
+    next: RoutineStep[],
+  ) {
+    const routines = structuredClone(s.routines);
+    if (slot.kind === "am") routines[phase].am = next;
+    else routines[phase].pm[slot.night] = next;
+    updateSettings({ routines });
   }
 
   function onImportFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -111,16 +241,6 @@ export function SettingsView() {
     clearAll();
     toast(t.settings.dataDeleted);
   }
-
-  const nameFields: { id: ProductId; label: string }[] = [
-    { id: "cleanser", label: t.settings.nameCleanser },
-    { id: "hyaluEyes", label: t.settings.nameHyaluEyes },
-    { id: "sanaWrinkle", label: t.settings.nameSanaWrinkle },
-    { id: "sanaBright", label: t.settings.nameSanaBright },
-    { id: "retinolB3", label: t.settings.nameRetinolB3 },
-    { id: "moisturizer", label: t.settings.nameMoisturizer },
-    { id: "spf", label: t.settings.nameSpf },
-  ];
 
   return (
     <section className="view" aria-label={t.nav.settings}>
@@ -204,20 +324,75 @@ export function SettingsView() {
       </div>
 
       <div className="card">
-        <h2>{t.settings.productNames}</h2>
-        {nameFields.map(({ id, label }) => (
-          <div className="field" key={id}>
-            <label>{label}</label>
+        <h2>{t.settings.productsTitle}</h2>
+        {products.map((p, i) => (
+          <div className="field" key={p.id} style={{ display: "flex", gap: 8, alignItems: "center" }}>
             <input
               type="text"
-              value={names[id]}
-              onChange={(e) => setNames((prev) => ({ ...prev, [id]: e.target.value }))}
+              style={{ flex: 1 }}
+              placeholder={t.settings.productNamePlaceholder}
+              value={p.name}
+              onChange={(e) => renameProduct(p.id, e.target.value)}
             />
+            <button className="iconbtn" aria-label={t.settings.moveUp} disabled={i === 0} onClick={() => moveProduct(i, -1)}>
+              <Icon name="chevronUp" size={18} />
+            </button>
+            <button
+              className="iconbtn"
+              aria-label={t.settings.moveDown}
+              disabled={i === products.length - 1}
+              onClick={() => moveProduct(i, 1)}
+            >
+              <Icon name="chevronDown" size={18} />
+            </button>
+            <button className="iconbtn" aria-label={t.settings.removeStep} onClick={() => deleteProduct(p.id)}>
+              <Icon name="trash" size={18} />
+            </button>
           </div>
         ))}
-        <button className="btn primary btn-block" style={{ marginTop: 12 }} onClick={saveNames}>
-          {t.settings.saveNames}
+        <button className="btn ghost btn-block" style={{ marginTop: 4 }} onClick={addProduct}>
+          <Icon name="plus" size={16} /> {t.settings.addProduct}
         </button>
+      </div>
+
+      <div className="card">
+        <h2>{t.settings.routinesTitle}</h2>
+        {products.length === 0 ? (
+          <p className="hint">{t.settings.noProducts}</p>
+        ) : (
+          <>
+            <div className="field">
+              <label>{t.settings.routinePhase}</label>
+              <div className="seg">
+                {([1, 2] as const).map((ph) => (
+                  <button key={ph} className={routinePhase === ph ? "on" : ""} onClick={() => setRoutinePhase(ph)}>
+                    {ph === 1 ? t.phases.phase1 : t.phases.phase2}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <h3>{t.settings.routineAm}</h3>
+            <StepList
+              list={s.routines[routinePhase].am}
+              products={products}
+              t={t}
+              onChange={(next) => setRoutineList(routinePhase, { kind: "am" }, next)}
+            />
+
+            {editableNights.map((nt) => (
+              <div key={nt}>
+                <h3>{t.night.short(nt)}</h3>
+                <StepList
+                  list={s.routines[routinePhase].pm[nt] ?? []}
+                  products={products}
+                  t={t}
+                  onChange={(next) => setRoutineList(routinePhase, { kind: "pm", night: nt }, next)}
+                />
+              </div>
+            ))}
+          </>
+        )}
       </div>
 
       <div className="card">
