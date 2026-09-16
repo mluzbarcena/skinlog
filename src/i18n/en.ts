@@ -23,7 +23,7 @@ export const en: Dict = {
   weekdaysShort: WEEKDAYS_SHORT,
   months: MONTHS,
 
-  brand: { name: "Routine", tag: "skincare" },
+  brand: { name: "SkinLog" },
 
   nav: {
     today: "Today",
