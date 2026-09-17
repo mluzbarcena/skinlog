@@ -1,7 +1,9 @@
-# Skinlog — v1.3.0
+# Skinlog — v1.4.0
 
 Personal tool for daily tracking of a skincare routine and retinol progression.
-**Offline, no backend, no accounts.** All data lives in your browser's `localStorage`.
+**Offline-first: no backend, no account required.** All data lives in your browser's
+`localStorage`, and **cross-device sync is an optional progressive enhancement** — sign in with
+Google only if you want your data on multiple devices (see below).
 It's an **installable PWA**: a service worker precaches the app shell and the (self-hosted)
 font, so it boots and runs with **zero network calls** — even fully offline.
 
@@ -84,7 +86,13 @@ skinlog/
 │  │  ├─ config.ts             # ⭐ ALL EDITABLE RULES (see below)
 │  │  ├─ dates.ts              # date helpers in LOCAL time
 │  │  ├─ logic.ts              # phases, completeness, night suggestion, stats
-│  │  └─ storage.ts            # state + localStorage + export/import (external store)
+│  │  ├─ storage.ts            # state + localStorage + export/import (external store)
+│  │  └─ sync/merge.ts         # pure per-day last-writer-wins merge (cross-device sync)
+│  ├─ sync/                    # optional Firestore sync (lazy Firebase, Google login)
+│  │  ├─ firebase.ts           # lazy, code-split SDK init + isConfigured()
+│  │  ├─ auth.ts               # Google sign-in/out
+│  │  ├─ engine.ts             # real-time onSnapshot + debounced push + merge
+│  │  └─ useSync.ts            # React binding for sync status
 │  ├─ state/
 │  │  ├─ useStore.ts           # binds the store to React (useSyncExternalStore) + actions
 │  │  └─ useTheme.ts           # syncs the .dark class based on settings.theme
@@ -94,7 +102,7 @@ skinlog/
 │  │  └─ useI18n.ts            # hook: { lang, t, fmt }
 │  ├─ components/              # Topbar, BrandMark, NavBar, LanguageSwitcher, Icon, Toast, DayEditor, UpdatePrompt
 │  ├─ views/                   # TodayView, CalendarView, ProgressView, PhasesView, SettingsView
-│  └─ test/                    # logic.test.ts (Vitest) + render.test.tsx (smoke)
+│  └─ test/                    # logic.test.ts, merge.test.ts (Vitest) + render.test.tsx (smoke)
 └─ legacy/                     # original vanilla version (reference, not used in the build)
 ```
 
@@ -107,7 +115,7 @@ skinlog/
 
   ```jsonc
   {
-    "version": 2,
+    "version": 3,
     "settings": { /* frequencies, phase, theme, language, products, routines… */ },
     "days": {
       "2026-09-16": {
@@ -116,7 +124,8 @@ skinlog/
         "tolerance": 0,
         "note": ""
       }
-    }
+    },
+    "meta": { /* sync clocks: per-day updatedAt, deletion tombstones, settingsUpdatedAt */ }
   }
   ```
 
@@ -124,12 +133,27 @@ skinlog/
   instantly**. React learns about it via `useSyncExternalStore`, so the UI and disk stay in sync.
 - **Empty days are discarded** automatically on save (they don't clutter storage).
 - `migrate()` backfills new keys when the schema changes, without losing old data. The `v1 → v2`
-  migration seeds the editable product catalog and routine templates from the old shape while
-  preserving every day's history (records key off stable product ids).
-- **There is no server and no cross-device sync.** If you clear the browser's data, it is lost:
-  from **Settings → Data** you can export to JSON (re-importable) or CSV (for spreadsheets).
+  migration seeds the editable product catalog and routine templates from the old shape; `v2 → v3`
+  attaches the `meta` sync clocks (purely additive) while preserving every day's history.
+- **Local export/import**: from **Settings → Data** you can export to JSON (re-importable) or CSV
+  (for spreadsheets) as a manual backup.
 - Dates are always handled in **local time** (`"YYYY-MM-DD"`) so that "today" doesn't shift
   across time zones.
+
+### Cross-device sync (optional)
+
+Sync is **off by default** and the app never talks to a server unless you opt in. From
+**Settings → Cloud sync** you can sign in with Google to back up and mirror your data across
+devices in real time:
+
+- Data lives in one Firestore document per user (`users/{uid}`), a 1:1 mirror of the local state.
+- Conflicts resolve **per calendar day** (last-writer-wins with deletion tombstones), so two
+  devices editing different days offline both keep their changes on reconnect.
+- The Firebase SDK is **lazy-loaded and code-split** — signed-out users never download it, and it
+  is excluded from the offline precache.
+- Requires build-time `VITE_FIREBASE_*` config (see `.env.example`); when absent, the sync UI is
+  hidden and the app behaves exactly as an offline-only build. Security is enforced by
+  `firestore.rules` (each user can only access their own document).
 
 ---
 
