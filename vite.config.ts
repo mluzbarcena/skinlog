@@ -15,6 +15,19 @@ export default defineConfig({
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),
   },
+  build: {
+    rollupOptions: {
+      output: {
+        // Group the Firebase SDK into a single predictably-named chunk so the
+        // service worker can exclude it from the offline precache (see globIgnores).
+        manualChunks(id) {
+          if (id.includes("node_modules/firebase") || id.includes("node_modules/@firebase")) {
+            return "firebase";
+          }
+        },
+      },
+    },
+  },
   plugins: [
     react(),
     tailwindcss(),
@@ -28,6 +41,10 @@ export default defineConfig({
       includeAssets: ["favicon.svg", "apple-touch-icon.png", "icon-192.png", "icon-512.png"],
       workbox: {
         globPatterns: ["**/*.{js,css,html,png,svg,woff2}"],
+        // Keep the app shell offline-first WITHOUT precaching the (large, network-
+        // only) Firebase SDK: it's split into its own chunk, loaded on demand only
+        // when a signed-in user syncs. Offline/signed-out users never fetch it.
+        globIgnores: ["**/firebase-*.js"],
       },
       manifest: {
         name: "SkinLog",

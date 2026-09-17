@@ -193,7 +193,8 @@ describe("v1 -> v2 migration", () => {
     expect(res.ok).toBe(true);
 
     const st = S();
-    expect(st.version).toBe(2);
+    expect(st.version).toBe(3);
+    expect(st.meta).toBeDefined(); // v2 -> v3 attaches sync metadata
     expect(Array.isArray(st.settings.products)).toBe(true);
     // Legacy productNames key is gone.
     expect((st.settings as unknown as Record<string, unknown>).productNames).toBeUndefined();

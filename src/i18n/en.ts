@@ -211,6 +211,18 @@ export const en: Dict = {
     importError: (msg: string): string => `Could not import: ${msg}`,
     errInvalidJson: "The file is not valid JSON.",
     errInvalidShape: "The JSON doesn't have the expected structure (missing 'days').",
+    sync: {
+      title: "Cloud sync",
+      intro:
+        "Optional. Sign in with Google to back up your data and see it on multiple devices. Without signing in, everything keeps working only in this browser.",
+      signIn: "Sign in with Google",
+      signOut: "Sign out",
+      signedInAs: (email: string): string => `Signed in: ${email}`,
+      statusSyncing: "Syncing…",
+      statusSynced: "Synced",
+      statusError: "Sync error",
+      lastSynced: (time: string): string => `Last synced: ${time}`,
+    },
   },
 
   editor: {

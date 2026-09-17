@@ -92,10 +92,26 @@ export interface DayRecord {
   note: string;
 }
 
+/**
+ * Sync metadata (schema v3+). Kept OUT of the business types (Settings/DayRecord)
+ * so domain logic stays oblivious to sync. Timestamps are epoch ms.
+ * `dayUpdatedAt` / `deletedDays` are last-writer-wins clocks per calendar day;
+ * a date can be in at most one of them at a time (see storage stamping + merge).
+ */
+export interface SyncMeta {
+  /** date -> ms of the last local edit to that day. */
+  dayUpdatedAt: Record<string, number>;
+  /** date -> ms the day was deleted (tombstone), so deletions win over stale copies. */
+  deletedDays: Record<string, number>;
+  /** ms of the last local edit to `settings`. */
+  settingsUpdatedAt: number;
+}
+
 export interface AppState {
   version: number;
   settings: Settings;
   days: Record<string, DayRecord>;
+  meta: SyncMeta;
 }
 
 export interface AmStatus {

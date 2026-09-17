@@ -212,6 +212,18 @@ export const es = {
     importError: (msg: string): string => `No se pudo importar: ${msg}`,
     errInvalidJson: "El archivo no es JSON válido.",
     errInvalidShape: "El JSON no tiene la estructura esperada (falta 'days').",
+    sync: {
+      title: "Sincronización en la nube",
+      intro:
+        "Opcional. Iniciá sesión con Google para respaldar tus datos y verlos en varios dispositivos. Sin iniciar sesión, todo sigue funcionando solo en este navegador.",
+      signIn: "Iniciar sesión con Google",
+      signOut: "Cerrar sesión",
+      signedInAs: (email: string): string => `Sesión iniciada: ${email}`,
+      statusSyncing: "Sincronizando…",
+      statusSynced: "Sincronizado",
+      statusError: "Error de sincronización",
+      lastSynced: (time: string): string => `Última sincronización: ${time}`,
+    },
   },
 
   editor: {

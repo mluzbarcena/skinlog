@@ -20,6 +20,7 @@ import { useI18n } from "../i18n/useI18n";
 import type { Dict } from "../i18n/es";
 import { useToast } from "../components/Toast";
 import { Icon } from "../components/Icon";
+import { useSync } from "../sync/useSync";
 import type { EditableNight, Lang, Phase, Product, RoutineStep } from "../domain/types";
 
 function download(filename: string, text: string, mime: string) {
@@ -117,6 +118,45 @@ function StepList({
         <Icon name="plus" size={16} /> {t.settings.addStep}
       </button>
     </>
+  );
+}
+
+/** Optional cloud-sync card. Renders nothing unless Firebase is configured. */
+function SyncCard({ t }: { t: Dict }) {
+  const sync = useSync();
+  if (!sync.configured) return null;
+  return (
+    <div className="card">
+      <h2>{t.settings.sync.title}</h2>
+      {sync.user ? (
+        <>
+          <p className="hint">{t.settings.sync.signedInAs(sync.user.email ?? "—")}</p>
+          <div className="field" style={{ display: "flex", gap: 6, alignItems: "center" }}>
+            {sync.status === "synced" && <Icon name="check" size={16} />}
+            {sync.status === "error" && <Icon name="warning" size={16} />}
+            <span className="hint" style={{ marginTop: 0 }}>
+              {sync.status === "syncing"
+                ? t.settings.sync.statusSyncing
+                : sync.status === "error"
+                  ? t.settings.sync.statusError
+                  : sync.lastSyncedAt
+                    ? t.settings.sync.lastSynced(new Date(sync.lastSyncedAt).toLocaleTimeString())
+                    : t.settings.sync.statusSynced}
+            </span>
+          </div>
+          <button className="btn ghost btn-block" onClick={sync.disable}>
+            <Icon name="globe" size={18} /> {t.settings.sync.signOut}
+          </button>
+        </>
+      ) : (
+        <>
+          <p className="hint">{t.settings.sync.intro}</p>
+          <button className="btn ghost btn-block" onClick={sync.enable}>
+            <Icon name="globe" size={18} /> {t.settings.sync.signIn}
+          </button>
+        </>
+      )}
+    </div>
   );
 }
 
@@ -394,6 +434,8 @@ export function SettingsView() {
           </>
         )}
       </div>
+
+      <SyncCard t={t} />
 
       <div className="card">
         <h2>{t.settings.data}</h2>

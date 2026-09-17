@@ -1,6 +1,10 @@
 node_modules
 dist
 *.local
+# Local Firebase config (never commit real values); keep the template.
+.env
+.env.*
+!.env.example
 .DS_Store
 skinlog-dist.zip
 *.tsbuildinfo
