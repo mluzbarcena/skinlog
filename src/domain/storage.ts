@@ -18,17 +18,17 @@
      }
    ============================================================================= */
 
-import { SCHEMA_VERSION, SEED_PRODUCTS, SEED_ROUTINES, STORAGE_KEY, defaultSettings } from "./config";
+import { SCHEMA_VERSION, SEED_PRODUCTS, SEED_ROUTINES, STORAGE_KEY, defaultSettings, emptyMeta } from "./config";
 import { dayStatus } from "./logic";
-import type { AppState, DayRecord, Product, Settings } from "./types";
+import type { AppState, DayRecord, Product, Settings, SyncMeta } from "./types";
 
 function emptyState(): AppState {
-  return { version: SCHEMA_VERSION, settings: defaultSettings(), days: {} };
+  return { version: SCHEMA_VERSION, settings: defaultSettings(), days: {}, meta: emptyMeta() };
 }
 
 // Fills in keys that may be missing after a schema update. Idempotent: running
 // it twice yields the same result (it never re-seeds an already-migrated state).
-function migrate(s: unknown): AppState {
+export function migrate(s: unknown): AppState {
   if (!s || typeof s !== "object") return emptyState();
   const obj = s as Partial<AppState>;
   if (!obj.settings) {
@@ -60,6 +60,17 @@ function migrate(s: unknown): AppState {
     }
   }
   if (!obj.days || typeof obj.days !== "object") obj.days = {};
+
+  // --- v2 -> v3: attach sync metadata if missing. Purely additive: existing
+  // days start with no clock (treated as 0), so a first sync lets the remote
+  // win where it has newer data, but merge is per-day so nothing is destroyed.
+  const meta = obj.meta as Partial<SyncMeta> | undefined;
+  obj.meta = {
+    dayUpdatedAt: (meta && typeof meta.dayUpdatedAt === "object" && meta.dayUpdatedAt) || {},
+    deletedDays: (meta && typeof meta.deletedDays === "object" && meta.deletedDays) || {},
+    settingsUpdatedAt: (meta && typeof meta.settingsUpdatedAt === "number" && meta.settingsUpdatedAt) || 0,
+  };
+
   obj.version = SCHEMA_VERSION;
   return obj as AppState;
 }
@@ -87,10 +98,55 @@ function persist(next: AppState): void {
   }
 }
 
+/**
+ * Derives fresh sync metadata by diffing prev vs next. A day whose object
+ * reference changed (or is new) is stamped "updated now" and un-tombstoned; a
+ * day that disappeared is tombstoned. A new settings reference bumps
+ * settingsUpdatedAt. Accumulated clocks/tombstones from prev are preserved.
+ */
+function stampMeta(prev: AppState, next: AppState, now: number): SyncMeta {
+  const dayUpdatedAt = { ...prev.meta.dayUpdatedAt };
+  const deletedDays = { ...prev.meta.deletedDays };
+  let settingsUpdatedAt = prev.meta.settingsUpdatedAt;
+
+  for (const date in next.days) {
+    if (prev.days[date] !== next.days[date]) {
+      dayUpdatedAt[date] = now;
+      delete deletedDays[date];
+    }
+  }
+  for (const date in prev.days) {
+    if (!(date in next.days)) {
+      deletedDays[date] = now;
+      delete dayUpdatedAt[date];
+    }
+  }
+  if (prev.settings !== next.settings) settingsUpdatedAt = now;
+  return { dayUpdatedAt, deletedDays, settingsUpdatedAt };
+}
+
+// When true, setState skips re-stamping (the meta is already authoritative,
+// e.g. produced by a remote merge) to avoid a stamp -> push -> merge loop.
+let applyingRemote = false;
+
 function setState(next: AppState): void {
-  state = next;
-  persist(next);
+  const stamped = applyingRemote ? next : { ...next, meta: stampMeta(state, next, Date.now()) };
+  state = stamped;
+  persist(stamped);
   listeners.forEach((fn) => fn());
+}
+
+/**
+ * Replaces local state with an already-merged/authoritative state (from the sync
+ * engine) WITHOUT re-stamping timestamps. Notifies subscribers so the UI updates.
+ */
+export function applyRemoteState(next: AppState): void {
+  applyingRemote = true;
+  try {
+    setState(next);
+  } finally {
+    applyingRemote = false;
+  }
 }
 
 // --- external store API ------------------------------------------------------

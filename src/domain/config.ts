@@ -15,11 +15,19 @@ import type {
   ProductId,
   Routines,
   Settings,
+  SyncMeta,
   ToleranceMeta,
 } from "./types";
 
 export const STORAGE_KEY = "skincareTracker:v1";
-export const SCHEMA_VERSION = 2;
+// v2 -> v3: added SyncMeta (`meta`) for cross-device sync. Purely additive:
+// v2 payloads migrate by getting a fresh emptyMeta(); no day/settings data moves.
+export const SCHEMA_VERSION = 3;
+
+/** Fresh sync metadata for a new or newly-migrated state. */
+export function emptyMeta(): SyncMeta {
+  return { dayUpdatedAt: {}, deletedDays: {}, settingsUpdatedAt: 0 };
+}
 
 /** Optional AM step that is hidden unless `settings.brightingEnabled` is on. */
 export const BRIGHTENING_STEP_ID: ProductId = "sanaBright";
