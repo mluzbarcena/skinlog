@@ -5,6 +5,29 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.4.0] - 2026-09-17
+
+### Added
+
+- **Optional cross-device sync (Firestore)**: a progressive enhancement — the app stays
+  offline-first with no account by default. From **Settings → Cloud sync** you can sign in with
+  **Google** to back up and mirror your settings and days across devices in **real time**
+  (`onSnapshot`). Conflicts resolve **per calendar day** with last-writer-wins and deletion
+  tombstones, so two devices editing different days offline both keep their changes on reconnect
+  (`src/domain/sync/merge.ts`, covered by `merge.test.ts`).
+- **Firestore security rules** (`firestore.rules`): each user can only read/write their own
+  `users/{uid}` document. `.env.example` documents the required `VITE_FIREBASE_*` config, injected
+  into the Pages build from repo secrets.
+
+### Changed
+
+- **Schema `v2 → v3`**: adds a `meta` block (per-day edit/deletion clocks + `settingsUpdatedAt`)
+  used by the merge. Purely additive — existing data migrates without loss and business types are
+  unchanged.
+- The **Firebase SDK is lazy-loaded and code-split**, excluded from the offline precache: signed-out
+  users never download it and the app keeps its "zero network calls" default. When `VITE_FIREBASE_*`
+  is unset, the sync UI is hidden and the build behaves exactly as an offline-only app.
+
 ## [1.3.0] - 2026-09-16
 
 ### Changed
@@ -93,6 +116,7 @@ See the specification: [`specs/v1.0.0-react-migration.md`](specs/v1.0.0-react-mi
   scale and irritation warning.
 - No backend, no accounts, no cross-device sync.
 
+[1.4.0]: https://github.com/mluzbarcena/skinlog/releases/tag/v1.4.0
 [1.3.0]: https://github.com/mluzbarcena/skinlog/releases/tag/v1.3.0
 [1.2.0]: https://github.com/mluzbarcena/skinlog/releases/tag/v1.2.0
 [1.1.0]: https://github.com/mluzbarcena/skinlog/releases/tag/v1.1.0
